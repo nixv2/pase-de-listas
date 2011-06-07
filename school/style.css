@@ -1,0 +1,55 @@
+.logout-icon {
+	background:transparent url(img/logout.png) 0 0 no-repeat !important;
+}
+.addUser-icon {
+	background:transparent url(img/user_add.png) 0 0 no-repeat !important;
+}
+.deleteUser-icon {
+	background:transparent url(img/user_delete.png) 0 0 no-repeat !important;
+}
+.editUser-icon {
+	background:transparent url(img/user_edit.png) 0 0 no-repeat !important;
+}
+#app-header {
+    color: #596F8F;
+    font-size: 22px;
+    font-weight: 200;
+    padding: 8px 15px;
+    text-shadow: 0 1px 0 #fff;
+}
+.x-panel-ghost {
+    z-index: 1;
+}
+.x-border-layout-ct {
+    background: #DFE8F6;
+}
+.x-portal-body {
+    padding: 0 0 0 8px;
+}
+.x-portal .x-portal-column {
+    /* columns must have vertical padding to avoid losing dimensions when empty */
+    padding: 8px 8px 0 0;
+}
+.x-portal .x-panel-dd-spacer {
+    border: 2px dashed #99bbe8;
+    background: #f6f6f6;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    margin-bottom: 10px;
+}
+.x-portlet {
+    margin-bottom:10px;
+    padding: 1px;
+}
+.x-portlet .x-panel-body {
+    background: #fff;
+}
+.portlet-content {
+    padding: 10px;
+    font-size: 11px;
+}
+
+#app-options .portlet-content {
+    padding: 5px;
+    font-size: 12px;
+}

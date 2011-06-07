@@ -1,0 +1,140 @@
+-- phpMyAdmin SQL Dump
+-- version 3.3.7deb5build0.10.10.1
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jun 07, 2011 at 01:53 PM
+-- Server version: 5.1.49
+-- PHP Version: 5.3.3-1ubuntu9.5
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `school`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `asamblea`
+--
+
+CREATE TABLE IF NOT EXISTS `asamblea` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `horaIni` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `horaFin` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `fecha` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `tipo_asamblea` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `abierta` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `asam_estud`
+--
+
+CREATE TABLE IF NOT EXISTS `asam_estud` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_estudiante` int(11) NOT NULL,
+  `id_asamblea` int(11) NOT NULL,
+  `presente` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `estudiantes`
+--
+
+CREATE TABLE IF NOT EXISTS `estudiantes` (
+  `matricula` int(7) NOT NULL,
+  `nombre` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `apellido` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `carrera` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `semestre` int(1) NOT NULL,
+  `num_faltas` int(11) NOT NULL,
+  PRIMARY KEY (`matricula`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `estudiantes`
+--
+
+INSERT INTO `estudiantes` (`matricula`, `nombre`, `apellido`, `email`, `carrera`, `semestre`, `num_faltas`) VALUES
+(1080757, 'algo', 'mas', NULL, 'itic', 6, 0),
+(1080758, 'algo', 'menos', NULL, 'algo', 2, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faltas`
+--
+
+CREATE TABLE IF NOT EXISTS `faltas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_estudiante` int(11) NOT NULL,
+  `id_asamblea` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `faltas`
+--
+
+INSERT INTO `faltas` (`id`, `id_estudiante`, `id_asamblea`) VALUES
+(1, 1080757, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `falta_estud`
+--
+
+CREATE TABLE IF NOT EXISTS `falta_estud` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_estudiante` int(11) NOT NULL,
+  `id_falta` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `falta_estud`
+--
+
+INSERT INTO `falta_estud` (`id`, `id_estudiante`, `id_falta`) VALUES
+(1, 1080757, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `lastname` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `passwrd` varchar(11) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `lastname`, `email`, `username`, `passwrd`) VALUES
+(1, 'admin', 'admin', 'admin@algo.com', 'admin', 'admin');
