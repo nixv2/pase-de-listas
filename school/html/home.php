@@ -5,16 +5,17 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Home</title>
-<link rel="stylesheet" type="text/css" href="../ext-4.0.0/resources/css/ext-all.css" /> 
-<script type="text/javascript" src="../ext-4.0.0/bootstrap.js"></script>
+<link rel="stylesheet" type="text/css" href="../ext-4.0.2/resources/css/ext-all.css" /> 
+<script type="text/javascript" src="../ext-4.0.2/bootstrap.js"></script>
+<script type="text/javascript" src="../ext-4.0.2/locale/ext-lang-es.js"></script>
  
 <link rel='stylesheet' type='text/css' href='../style.css' />
 
 <!-- extensions-->
-    <script type="text/javascript" src="../ext-4.0.0/examples/portal/classes/Portlet.js"></script>
-    <script type="text/javascript" src="../ext-4.0.0/examples/portal/classes/PortalColumn.js"></script>
-    <script type="text/javascript" src="../ext-4.0.0/examples/portal/classes/PortalPanel.js"></script>
-    <script type="text/javascript" src="../ext-4.0.0/examples/portal/classes/PortalDropZone.js"></script>
+    <script type="text/javascript" src="../ext-4.0.2/examples/portal/classes/Portlet.js"></script>
+    <script type="text/javascript" src="../ext-4.0.2/examples/portal/classes/PortalColumn.js"></script>
+    <script type="text/javascript" src="../ext-4.0.2/examples/portal/classes/PortalPanel.js"></script>
+    <script type="text/javascript" src="../ext-4.0.2/examples/portal/classes/PortalDropZone.js"></script>
  
 <?php 
 	session_start(); 

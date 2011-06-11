@@ -10,6 +10,18 @@
 .editUser-icon {
 	background:transparent url(img/user_edit.png) 0 0 no-repeat !important;
 }
+.delete-icon {
+	background:transparent url(img/delete.png) 0 0 no-repeat !important;
+}
+.grid-icon {
+	background:transparent url(img/grid.png) 0 0 no-repeat !important;
+}
+.form-icon {
+	background:transparent url(img/details.gif) 0 0 no-repeat !important;
+}
+.pasLista-icon {
+	background:transparent url(img/saved.png) 0 0 no-repeat !important;
+}
 #app-header {
     color: #596F8F;
     font-size: 22px;

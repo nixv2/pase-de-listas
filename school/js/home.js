@@ -8,8 +8,7 @@ com.fvr.school.home = {
 			layout	: "border",
 			padding	: '0 5 5 5',
 			items	: [{id : 'app-header',xtype : "box",region : "north", height : 40,html : "Pase de Lista de Asambleas"},
-					   {xtype : "container",region : "center",layout : "border", items : [this.menu(),this.portal()]}]
-			 
+					   {xtype : "container",region : "center",layout : "border", items : [this.menu(),this.portal()]}] 
 		});
 		
 		Ext.define('asLista',{extend: "Ext.data.Model",
@@ -28,12 +27,13 @@ com.fvr.school.home = {
 			title	: 'Menu',
 			tbar		: [{text: "logout",scope:this,handler:this.logout,iconCls:'logout-icon',tooltip:"Cerrar sesion"}],
 		     region	: 'west',
-		     animCollapse: true,
+		     //animCollapse: true,
 		     width	: 200,
 		     minWidth	: 150,
 		     maxWidth	: 250,
 		     split	: true,
-		     collapsible: true,
+		    // collapsible: true,
+		     collapseMode: "mini",
 		     layout	: "accordion",
 			items	: this.menus()
 			};
@@ -57,9 +57,9 @@ com.fvr.school.home = {
 			border	: false,
 			items	: [
 				{//columna uno
-				items : [{title:"Asambleas",layout:"fit",items:this.verAsam()}]
+				items : [{title:"Asambleas",iconCls:"grid-icon",layout:"fit",items:this.verAsam()}]
 				},{//columna dos
-				items: [{title:"Estudiantes",items:this.esForm}]
+				items: [{title:"Estudiantes",iconCls:"grid-icon",items:this.esForm}]
 				}]//fin items portal
 		};
 		return portal;
@@ -130,6 +130,7 @@ com.fvr.school.home = {
 		});
 		this.asamWin = new Ext.Window({
 			title	: "Crear nueva asamblea",
+			iconCls	: "form-icon",
 			bodyStyle	: 'padding:10px;background-color:#fff;',
 			width	: 300,
 			height	: 270,
@@ -192,17 +193,50 @@ com.fvr.school.home = {
 		this.asamGrid = new Ext.grid.Panel({
 			store	: asamStore,
 			height	: 300,
+			tbar		: [{text:"Eliminar",iconCls:"delete-icon",scope:this,handler:this.deleteAsam,tooltip:"Eliminar asamblea seleccionada"}],
 			columns	:[
 				{id:"id",header:"Tipo de Asamblea",dataIndex:"tipoAsam",width:115},
 				{header: "Fecha",dataIndex: "fecha"},
 				{header: "Hora Inicio",dataIndex: "horaIni"},
 				{header: "Hora Fin",dataIndex: "horaFin"},
-				{xtype: 'booleancolumn',header: 'Estado',dataIndex: "terminada",width: 60,trueText: "Terminada terminar",falseText:"Sin terminadar"}
+				{xtype: 'booleancolumn',header: 'Estado',dataIndex: "terminada",width: 130,trueText: "Terminada",falseText:"Sin terminadar"}
 			]
 		});
 		return this.asamGrid;
 	},
-	//funciones que se encargan del pase de lista(frontend y backend)
+	deleteAsam : function(){
+		var rows = this.asamGrid.getSelectionModel();
+		var grid = this.asamGrid;
+		var asam = this.asamStore;
+		var data;
+		Ext.each(rows,function(row){
+			data = row.selected.items[0].data;
+		});
+		Ext.MessageBox.show({
+			title	: 'Eliminar Asamblea',
+			msg		: "Decea eliminar permanentemente la<br/>asamblea "+data.tipoAsam+" del "+data.fecha+".",
+			buttons	: Ext.MessageBox.YESNO,
+			icon		: Ext.MessageBox.WARNING,
+			fn		: function(btn,text){
+				if(btn == 'yes'){
+					Ext.Ajax.request({
+						scope	: this,
+						url		: "../server/nuevaAsamblea.php",
+						params	: {asamId : data.id},
+						success	: function(response){
+							Ext.Msg.alert("Estado",response.responseText);
+							grid.getStore().load();
+							asam.load();
+						},
+						failure	: function(response){
+							Ext.Msg.alert("Error",response.responseText);
+						}
+					});
+				}
+			}
+		},this);
+	},
+	//funciones que se encargan del pase de lista(frontend y peticiones Ajax)
 	lista : function(btn){
 		
 		this.selectAsm = new Ext.form.Panel({
@@ -227,6 +261,7 @@ com.fvr.school.home = {
 		});
 		this.listaWin = new Ext.window.Window({
 			title	: "Pase de Lista",
+			iconCls	: "pasLista-icon",
 			bodyStyle	: 'padding:10px;background-color:#fff;',
 			layout	: "card",
 			activeItem: 0,
@@ -234,6 +269,7 @@ com.fvr.school.home = {
 			height	: 150,
 			x		: 620,
 			y		: 200,
+			modal	: true,
 			items	: [this.selectAsm,this.listaForm],
 			fbar		: [{text:"Presente",scope:this,handler:this.pasarLista}]
 			
@@ -255,6 +291,7 @@ com.fvr.school.home = {
 				failure	: function(form,action){
 					Ext.Msg.alert("Error",action.result.msg);
 					this.asamGrid.getStore().load();
+					this.listaWin.destroy();
 				}
 			});
 		}else{
@@ -266,11 +303,96 @@ com.fvr.school.home = {
 			});
 		}
 	},
-	addEstudiante  : function(){
-		var fomita = new Ext.Panel({
-			height	: 250,
+	//las siguientes dos funciones son para agregar estudiantes al sistema
+	addEstudiante  : function(btn){
+		this.addEstuForm = new Ext.form.Panel({
+			url		: "../server/crearEstudiante.php",
+			layout	: {type : 'vbox',align : 'stretch'},
+			border	: false,
+			bodyPadding: 10,
+			fieldDefaults: {labelAlign : 'top',labelWidth : 100,labelStyle : 'font-weight:bold'},
+			defaults	: {margins : '0 0 10 0'},
+			items: [{
+                    xtype	: 'fieldcontainer',
+                    fieldLabel: 'Datos personales',
+                    labelStyle: 'font-weight:bold;padding:0',
+                    combineErrors: true,
+				msgTarget	: 'side',
+                    layout	: 'hbox',
+                    defaultType: 'textfield',
+                    fieldDefaults: {labelAlign : 'top'},
+				items: [
+					{name : 'nombre',fieldLabel: 'Nombre',allowBlank: false,flex:1},
+					{name : 'iniNombre',fieldLabel : 'M',margins : '0 0 0 5',width : 30},
+					{name : 'apellido',fieldLabel : 'Apellido',allowBlank : false,margins : '0 5 0 5',flex:2},
+					]
+                	},{
+                	xtype : 'textfield',fieldLabel : 'Correo',name : 'email',vtype : "email",labelAlign : 'top',labelStyle: 'padding:0'
+                    },{
+                    xtype	: 'fieldcontainer',
+                    fieldLabel: 'Datos Academicos',
+                    labelStyle: 'font-weight:bold;padding:0',
+                    combineErrors: true,
+				msgTarget	: 'side',
+                    layout	: 'hbox',
+                    defaultType: 'textfield',
+                    fieldDefaults: {labelAlign : 'top'},
+				items: [
+					{name : 'matricula',fieldLabel : 'Matricula',allowBlank: false,minLength:7,maxLength:7,flex:1},
+					{name : 'carrera',xtype:"combo",fieldLabel:'Carrera',triggerAction:"all",store:["L.A.E","L.C.P"],allowBlank: false,margins : '0 0 0 5'},
+					{name : 'semestre',xtype:"combo",fieldLabel:'Semestre',triggerAction:"all",store:["1","2","3","4","5","6","7","8","9"],width:80,allowBlank: false,margins : '0 5 0 5'}
+					]
+                    }]
 		});
-		return fomita;
+		
+		this.addEstuWin = new Ext.window.Window({
+			title	: "Añadir Estudiante",
+			iconCls	: "addUser-icon",
+			layout	:"fit",
+			width	: 400,
+			height	: 300,
+			items	: this.addEstuForm,
+			fbar		: [
+				{text:"Cancelar",scope:this,handler:function(){this.addEstuForm.getForm().reset()}},
+				{text:"Agregar",scope:this,handler:this.crearEstu}
+				]
+		});
+		
+		this.addEstuWin.show();
+		btn.disable();
+		this.addEstuWin.on('destroy',function(){
+			btn.enable();
+		});
+	},
+	crearEstu : function(){
+		if(this.addEstuForm.getForm().isValid()){
+			this.addEstuForm.getForm().submit({
+				scope	: this,
+				success	: function(form,action){
+					Ext.MessageBox.show({
+						title	: "Estado",
+						msg		: action.result.msg,
+						buttons	: Ext.MessageBox.OK,
+						icon		: Ext.MessageBox.Ok
+					});
+				},
+				failure	: function(form,action){
+					Ext.MessageBox.show({
+						title	: "Estado",
+						msg		: action.result.msg,
+						buttons	: Ext.MessageBox.OK,
+						icon		: Ext.MessageBox.ERROR
+					});
+				}
+			});
+		}else{
+			Ext.MessageBox.show({
+				title	: "Cuidado",
+				msg		: "Algunos de los campos son requeridos",
+				buttons	: Ext.MessageBox.OK,
+				icon		: Ext.MessageBox.ERROR
+			});
+		}
 	},
 	
 	verEstudiantes : function(){
