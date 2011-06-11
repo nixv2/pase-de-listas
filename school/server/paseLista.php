@@ -32,7 +32,7 @@
 			echo Json_encode(array(
 					"success"	=> false,
 					"msg"	=> "La asamblea de $tipo_asm termino a las $horaFin <br/>cerrando asamblea"
-				));
+			));
 		}else{
 			$matricula = $_POST["matricula"];
 			$results = mysql_query("SELECT * FROM estudiantes WHERE matricula = $matricula");
@@ -76,6 +76,9 @@
 			if($mins < 0 || $horas < 0){
 				$termina = "si";
 			}
+		}
+		if($meridianoFin != $meridianoHoy){
+			$termina = "si";
 		}
 		return $termina;
 	}

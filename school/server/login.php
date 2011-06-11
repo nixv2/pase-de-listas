@@ -4,16 +4,24 @@
 	
 	$user = $_POST['user'];
 	$passwrd = $_POST["passwrd"];
-	$data = array();
 	
 	$query = mysql_query("SELECT * FROM users");
 	
-	if($row = mysql_fetch_array($query)){
-		if($user == $row["username"] && $passwrd == $row["passwrd"]){
-			session_start();
-			$_SESSION["k_username"] = $row["username"];
-			echo "{success : true}";
-		}else {
-			echo "{success : false, errors: { reason: 'Usuario y contrasena no concuerdan.' }}";
+	while($row = mysql_fetch_array($query)){
+		if($row["enUso"] == 1){
+			echo "{success : false, errors: { reason: 'Sesion en curso.<br/>Cerrer sesion anterior' }}";
+		}else{
+			if($user == $row["username"] && $passwrd == $row["passwrd"]){
+				session_start();
+				$id = $row["id"];
+				$_SESSION["k_id"] = $row["id"];
+				$_SESSION["k_username"] = $row["username"];
+				
+				$qr = mysql_query("UPDATE users SET enUso = 1 WHERE id=$id");
+				
+				echo "{success : true}";
+			}else {
+				echo "{success : false, errors: { reason: 'Usuario y contrasena no concuerdan.' }}";
+			}
 		}
 	}
