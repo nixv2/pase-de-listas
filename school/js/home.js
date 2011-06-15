@@ -1,9 +1,11 @@
 Ext.ns("com.fvr.school");
 
 com.fvr.school.home = {
-	id : 0,
-	init : function(){
+	id		: 0,
+	
+	init		: function(){
 		Ext.QuickTips.init();
+		
 		var vport = new Ext.Viewport({
 			layout	: "border",
 			padding	: '0 5 5 5',
@@ -32,11 +34,11 @@ com.fvr.school.home = {
 		     minWidth	: 150,
 		     maxWidth	: 250,
 		     split	: true,
-		    // collapsible: true,
+			collapsible: true,
 		     collapseMode: "mini",
 		     layout	: "accordion",
 			items	: this.menus()
-			};
+		};
          
          return menu;
 	},
@@ -46,18 +48,17 @@ com.fvr.school.home = {
 		this.esForm = new Ext.panel.Panel({
 			layout	: "card",
 			height	: 250,
-			bodyPadding:10,
 			border	: false,
 			items	: [this.verEstudiantes(),this.busEstudiante()]
 		});
-		
+		this.busqueda =  new Ext.form.field.Text({allowBlank:false});
 		var portal = {
 			xtype	: "portalpanel",
 			region	: "center",
 			border	: false,
 			items	: [
 				{//columna uno
-				items : [{title:"Asambleas",iconCls:"grid-icon",layout:"fit",items:this.verAsam()}]
+				items : [{title:"Asambleas",iconCls:"grid-icon",items:this.verAsam()}]
 				},{//columna dos
 				items: [{title:"Estudiantes",iconCls:"grid-icon",items:this.esForm}]
 				}]//fin items portal
@@ -98,12 +99,12 @@ com.fvr.school.home = {
 						{xtype : "button",text : "Añadir Estudiante",scope : this,handler : this.addEstudiante},
 						{xtype : "button",text : "Ver Estudiantes",scope : this, handler : function(){
 								var cardlayout = this.esForm.getLayout();
-								cardlayout.setActiveItem(1);
+								cardlayout.setActiveItem(0);
 							}
 						},
-						{xtype : "button",text : "buscar Estudiante",scope : this, handler : function(){
+						{xtype : "button",text : "Buscar Estudiante",scope : this, handler : function(){
 								var cardlayout = this.esForm.getLayout();
-								cardlayout.setActiveItem(2);
+								cardlayout.setActiveItem(1);
 							}
 						}
 					]
@@ -396,19 +397,81 @@ com.fvr.school.home = {
 	},
 	
 	verEstudiantes : function(){
-		return {
-		xtype	: "form",
-		height	: 250,
-		html		: "panel para ver todos los estudiantes",
-		}
+		Ext.define('estudiantes',{extend: "Ext.data.Model",
+			fields: ["id","nombre","carrera","semestre","faltas",{name:"ac",type:'bool'},"mail"],
+			proxy:{type:'rest',url:"../server/getEstudiantes.php",
+				reader:{xtype:'json',root:'data'}
+				}
+		});
+		var estStore = new Ext.data.Store({
+			model	: estudiantes,
+			autoLoad	: true
+		});
+		this.estGrid = new Ext.grid.Panel({
+			store	: estStore,
+			columns	: [
+				{id:"id",header:"Nombre",dataIndex:"nombre"},
+				{header:"Carrera",dataIndex:"carrera"},
+				{header:"Semestre",dataIndex:"semestre"},
+				{header: "Num. Faltas",dataIndex:"faltas"},
+				{header:"Estado",dataIndex:"ac"}
+			]
+		});
+		return this.estGrid;
 	},
 	
 	busEstudiante : function(){
-		return {
-		xtype	: "form",
-		height	: 250,
-		html		: "busqueda de estudiante"
-		}
+		this.busqueda =  new Ext.form.field.Text({allowBlank:false});
+		
+		Ext.define('buscar',{extend: "Ext.data.Model",
+			fields: ["id","nombre","carrera","semestre","faltas",{name:"ac",type:'bool'},"mail"],
+			proxy:{type:'rest',url:"../server/busqEstudiantes.php",
+				reader:{xtype:'json',root:'data'}
+				}
+		});
+		var busqStore = new Ext.data.Store({
+			model	: buscar,
+			totalProperty: 'total',
+			autoLoad	: true
+		});
+		
+		var pager = new Ext.PagingToolbar({ 
+			store	: busqStore, 
+			displayInfo: true, 
+			displayMsg: '{0} - {1} de {2} Estudiantes', 
+			emptyMsg	: 'Sin resultados', 
+			pageSize	: 10 
+		});
+		
+		this.estGrid = new Ext.grid.Panel({
+			store	: busqStore,
+			tbar		: [this.busqueda,{text:"Buscar",scope:this,handler: function(){
+			console.log(this.busqueda.getValue())
+			}}],
+			columns	: [
+				{id:"id",header:"Nombre",dataIndex:"nombre"},
+				{header:"Carrera",dataIndex:"carrera"},
+				{header:"Semestre",dataIndex:"semestre"},
+				{header: "Num. Faltas",dataIndex:"faltas"},
+				{header:"Estado",dataIndex:"ac"}
+			],
+			bbar		: pager,
+			stripeRows: true,
+		});
+		return this.estGrid;
+	},
+	
+	encontrarEst : function(){
+//		if(this.busqueda.isValid()){
+			this.estGrid.getStore().proxy.extraParams = {records: this.busqueda.getValue(),start:0,limit:10};
+			this.estGrid.getStore().load();
+			
+//		}else{
+//			Ext.MessageBox.show({
+//				title	: "Error",
+//				msg		: this.busqueda.getValue()
+//			});
+//		}
 	}
 }
 Ext.onReady(com.fvr.school.home.init,com.fvr.school.home);
